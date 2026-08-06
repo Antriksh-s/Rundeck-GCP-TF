@@ -1,0 +1,53 @@
+name: "Rundeck GCP Infrastructure Automation"
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "Select action: apply (create/update) or destroy (cleanup)"
+        required: true
+        default: "apply"
+        type: choice
+        options:
+          - apply
+          - destroy
+
+jobs:
+  terraform:
+    name: "Terraform Execution"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.7.0
+
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Initialize Terraform
+        run: terraform init
+
+      - name: Plan Infrastructure
+        run: |
+          terraform plan \
+            -var="gcp_project_id=${{ secrets.GCP_PROJECT_ID }}" \
+            -out=tfplan
+
+      - name: Apply Infrastructure
+        if: ${{ github.event.inputs.action == 'apply' }}
+        run: |
+          terraform apply -auto-approve tfplan
+
+      - name: Destroy Infrastructure
+        if: ${{ github.event.inputs.action == 'destroy' }}
+        run: |
+          terraform destroy \
+            -var="gcp_project_id=${{ secrets.GCP_PROJECT_ID }}" \
+            -auto-approve
