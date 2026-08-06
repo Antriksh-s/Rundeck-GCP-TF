@@ -15,7 +15,7 @@ on:
 jobs:
   terraform:
     name: "Terraform Execution"
-    runs-on: arc-runner-set
+    runs-on: [self-hosted, linux]
 
     steps:
       - name: Checkout Code
