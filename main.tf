@@ -8,30 +8,6 @@ terraform {
   }
 }
 
-# --- Variable Definitions ---
-variable "gcp_project_id" {
-  type        = string
-  description = "Target GCP Project ID"
-}
-
-variable "gcp_region" {
-  type        = string
-  default     = "us-central1"
-  description = "GCP region for resources"
-}
-
-variable "gcp_zone" {
-  type        = string
-  default     = "us-central1-a"
-  description = "GCP zone for compute instance"
-}
-
-variable "machine_type" {
-  type        = string
-  default     = "e2-standard-2" # 2 vCPU, 8GB RAM (recommended for Rundeck + Postgres)
-  description = "GCE Machine Type"
-}
-
 # --- Provider ---
 provider "google" {
   project = var.gcp_project_id
