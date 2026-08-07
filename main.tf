@@ -62,6 +62,9 @@ resource "google_compute_instance" "rundeck_vm" {
     #!/bin/bash
     set -e
 
+    # Open port 4440 in OS-level firewall (Ubuntu)
+    ufw allow 4440/tcp || true
+
     # Update system and install Docker & Docker Compose
     apt-get update -y
     apt-get install -y ca-certificates curl gnupg lsb-release
