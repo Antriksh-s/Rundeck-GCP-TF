@@ -8,20 +8,44 @@ terraform {
   }
 }
 
+# --- Variable Definitions ---
+variable "gcp_project_id" {
+  type        = string
+  description = "Target GCP Project ID"
+}
+
+variable "gcp_region" {
+  type        = string
+  default     = "us-central1"
+  description = "GCP region for resources"
+}
+
+variable "gcp_zone" {
+  type        = string
+  default     = "us-central1-a"
+  description = "GCP zone for compute instance"
+}
+
+variable "machine_type" {
+  type        = string
+  default     = "e2-standard-2" # 2 vCPU, 8GB RAM (recommended for Rundeck + Postgres)
+  description = "GCE Machine Type"
+}
+
+# --- Provider ---
 provider "google" {
   project = var.gcp_project_id
   region  = var.gcp_region
   zone    = var.gcp_zone
 }
 
-# Enable Compute Engine API automatically
+# --- Resources ---
 resource "google_project_service" "compute_api" {
   project            = var.gcp_project_id
   service            = "compute.googleapis.com"
   disable_on_destroy = false
 }
 
-# Firewall Rule allowing Rundeck Web UI on port 4440
 resource "google_compute_firewall" "allow_rundeck" {
   name       = "allow-rundeck-4440"
   network    = "default"
@@ -36,7 +60,6 @@ resource "google_compute_firewall" "allow_rundeck" {
   target_tags   = ["rundeck-server"]
 }
 
-# Compute Engine Instance
 resource "google_compute_instance" "rundeck_vm" {
   name         = "rundeck-poc-vm"
   machine_type = var.machine_type

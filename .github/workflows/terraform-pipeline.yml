@@ -25,6 +25,7 @@ jobs:
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.7.0
+          terraform_wrapper: false # Bypasses the Node.js requirement in ARC runners
 
       - name: Authenticate to GCP
         uses: google-github-actions/auth@v2
@@ -34,7 +35,9 @@ jobs:
       - name: Initialize Terraform
         run: terraform init
 
-      - name: Plan Infrastructure
+      # --- APPLY PATH ---
+      - name: Plan Infrastructure (Apply)
+        if: ${{ github.event.inputs.action == 'apply' }}
         run: |
           terraform plan \
             -var="gcp_project_id=${{ secrets.GCP_PROJECT_ID }}" \
@@ -42,9 +45,9 @@ jobs:
 
       - name: Apply Infrastructure
         if: ${{ github.event.inputs.action == 'apply' }}
-        run: |
-          terraform apply -auto-approve tfplan
+        run: terraform apply -auto-approve tfplan
 
+      # --- DESTROY PATH ---
       - name: Destroy Infrastructure
         if: ${{ github.event.inputs.action == 'destroy' }}
         run: |
