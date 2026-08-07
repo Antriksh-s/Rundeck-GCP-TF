@@ -15,7 +15,7 @@ on:
 jobs:
   terraform:
     name: "Terraform Execution"
-    runs-on: [self-hosted, linux]
+    runs-on: local-runner-set
 
     steps:
       - name: Checkout Code
