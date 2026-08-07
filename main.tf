@@ -1,5 +1,11 @@
 terraform {
   required_version = ">= 1.5.0"
+
+  backend "gcs" {
+    bucket = "gcp-rundeck-tfstate" 
+    prefix = "rundeck/state"
+  }
+
   required_providers {
     google = {
       source  = "hashicorp/google"
