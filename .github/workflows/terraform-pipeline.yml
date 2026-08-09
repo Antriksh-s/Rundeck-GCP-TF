@@ -15,7 +15,7 @@ on:
 jobs:
   terraform:
     name: "Terraform Execution"
-    runs-on: local-runner-set
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Code
